@@ -13,6 +13,7 @@ Detailed rules live in `.claude/rules/`. Read the relevant file when working in 
 - **[art-and-render.md](.claude/rules/art-and-render.md)** — 384×216 / 16×16, free asset packs, animation state machine, pixel-perfect rendering.
 - **[world.md](.claude/rules/world.md)** — Room transitions, camera, death and respawn, combat resources.
 - **[debug.md](.claude/rules/debug.md)** — Inspector, collider gizmos, custom overlays, F1/F12 toggles.
+- **[prototype-stages.md](.claude/rules/prototype-stages.md)** — Numbered build stages for the platforming prototype. **Do not skip stages.**
 - **[open-questions.md](.claude/rules/open-questions.md)** — Decisions deferred until forced by code or scope.
 
 ## Decisions log
@@ -36,3 +37,8 @@ Detailed rules live in `.claude/rules/`. Read the relevant file when working in 
 | 15 | Room transitions | Edge-touch only, fade-to-black (~0.3s), velocity preserved, doors deferred | world |
 | 16 | Animation | Hand-rolled match on state enum, plain spritesheets, state-deriv in `FixedUpdate`, frame-advance in `Update` | art-and-render |
 | 17 | Debug tooling | `bevy-inspector-egui` (F12) + `PhysicsDebugPlugin` + custom flags/velocity overlay (F1), ships in release | debug |
+| 18 | Version pin (Bevy ecosystem, Apr 2026) | Bevy 0.18, avian2d 0.6, bevy_ecs_ldtk 0.14, leafwing-input-manager 0.20, bevy-inspector-egui 0.36. LWIM published against Bevy 0.18.0-rc.2 — accept the rc-vs-release risk. | stack |
+| 19 | Build profile | `dev` opt-level=1 for project code, opt-level=3 for all deps (standard Bevy pattern; deps cached so slow build pays off once). | stack |
+| 20 | Import style | Explicit imports only — no `use bevy::prelude::*`. Deviates from Bevy tutorial idiom; cost is per-file translation tax. | stack |
+| 21 | Camera scaling (stage 2) | `ScalingMode::FixedVertical { 216 }`. Not pixel-perfect on non-integer window scales; defer render-to-texture upgrade until sub-pixel jitter is visible. | art-and-render |
+| 22 | Build approach | Numbered stages, do not skip. Each stage answers a specific runtime question. | prototype-stages |
