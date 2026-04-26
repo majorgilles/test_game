@@ -13,6 +13,7 @@ Detailed rules live in `.claude/rules/`. Read the relevant file when working in 
 - **[art-and-render.md](.claude/rules/art-and-render.md)** — 384×216 / 16×16, free asset packs, animation state machine, pixel-perfect rendering.
 - **[world.md](.claude/rules/world.md)** — Room transitions, camera, death and respawn, combat resources.
 - **[debug.md](.claude/rules/debug.md)** — Inspector, collider gizmos, custom overlays, F1/F12 toggles.
+- **[testing.md](.claude/rules/testing.md)** — Inline `#[cfg(test)] mod tests`, Given/When/Then bodies, test pure functions, skip ECS plumbing.
 - **[prototype-stages.md](.claude/rules/prototype-stages.md)** — Numbered build stages for the platforming prototype. **Do not skip stages.**
 - **[open-questions.md](.claude/rules/open-questions.md)** — Decisions deferred until forced by code or scope.
 
@@ -42,3 +43,4 @@ Detailed rules live in `.claude/rules/`. Read the relevant file when working in 
 | 20 | Import style | Explicit imports only — no `use bevy::prelude::*`. Deviates from Bevy tutorial idiom; cost is per-file translation tax. | stack |
 | 21 | Camera scaling (stage 2) | `ScalingMode::FixedVertical { 216 }`. Not pixel-perfect on non-integer window scales; defer render-to-texture upgrade until sub-pixel jitter is visible. | art-and-render |
 | 22 | Build approach | Numbered stages, do not skip. Each stage answers a specific runtime question. | prototype-stages |
+| 23 | Test style | Inline `#[cfg(test)] mod tests`. Given/When/Then comment bodies. Test extracted pure functions; do not test ECS plumbing. | testing |

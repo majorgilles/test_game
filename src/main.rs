@@ -1,8 +1,8 @@
+mod player;
+
 use bevy::DefaultPlugins;
-use bevy::app::{App, Startup};
-use bevy::camera::Camera2d;
-use bevy::camera::ScalingMode;
-use bevy::camera::projection::{OrthographicProjection, Projection};
+use bevy::app::{App, PluginGroup, Startup};
+use bevy::camera::{Camera2d, OrthographicProjection, Projection, ScalingMode};
 use bevy::color::Color;
 use bevy::ecs::system::Commands;
 use bevy::image::ImagePlugin;
