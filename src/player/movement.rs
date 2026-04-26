@@ -18,16 +18,29 @@ impl Default for MovementConfig {
 }
 
 pub fn next_velocity(current: f32, direction: f32, config: &MovementConfig) -> f32 {
-    if direction == 0.0 {
-        // Decay magnitude toward zero, floor at zero, re-apply original sign.
-        // Floor prevents overshoot when |current| < decel_per_tick — otherwise
-        // velocity would oscillate by ping-ponging across zero each tick.
-        let decel_per_tick = config.max_speed / config.ground_decel_frames;
-        let new_magnitude = (current.abs() - decel_per_tick).max(0.0);
-        return new_magnitude * current.signum();
+    // Stick magnitude is a throttle: target speed = direction * max_speed.
+    // We step `current` toward `target` each tick and never overshoot.
+    let target = direction * config.max_speed;
+
+    // Accel rate when we're being asked to go faster *in the input direction*,
+    // including direction reversal (signs differ). Decel rate when we're being
+    // asked to slow down — released stick (target=0) or reduced stick magnitude.
+    let same_direction = current.signum() == target.signum() || current == 0.0;
+    let asking_for_more_speed = current.abs() < target.abs();
+    let step = if !same_direction || asking_for_more_speed {
+        config.max_speed / config.ground_accel_frames
+    } else {
+        config.max_speed / config.ground_decel_frames
+    };
+
+    // Move toward target by `step`, clamped so we don't overshoot.
+    if (target - current).abs() <= step {
+        target
+    } else if target > current {
+        current + step
+    } else {
+        current - step
     }
-    let next = current + direction * (config.max_speed / config.ground_accel_frames);
-    next.clamp(-config.max_speed, config.max_speed)
 }
 
 #[cfg(test)]
@@ -103,5 +116,38 @@ mod tests {
 
         // Then velocity lands exactly at zero — it does not cross into negative territory.
         assert_eq!(result, 0.0);
+    }
+
+    #[test]
+    fn half_stick_settles_at_half_max_speed_rather_than_full_max() {
+        // Given a player at rest with default config and a half-tilted stick,
+        let config = MovementConfig::default();
+        let direction = 0.5;
+
+        // When enough ticks pass for any reasonable accel to complete,
+        let mut velocity = 0.0;
+        for _ in 0..100 {
+            velocity = next_velocity(velocity, direction, &config);
+        }
+
+        // Then velocity has settled at half max_speed (the throttle target),
+        // not full max_speed — the stick magnitude commands a target speed.
+        assert!(approx_eq(velocity, config.max_speed * 0.5));
+    }
+
+    #[test]
+    fn easing_stick_from_full_to_half_decelerates_to_half_max() {
+        // Given a player at full speed (was holding full-right stick),
+        let config = MovementConfig::default();
+        let starting_velocity = config.max_speed;
+
+        // When the player eases the stick to half-right and holds for many ticks,
+        let mut velocity = starting_velocity;
+        for _ in 0..100 {
+            velocity = next_velocity(velocity, 0.5, &config);
+        }
+
+        // Then velocity decelerates from max down to half-max — the new throttle target.
+        assert!(approx_eq(velocity, config.max_speed * 0.5));
     }
 }

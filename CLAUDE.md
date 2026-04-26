@@ -27,7 +27,7 @@ Detailed rules live in `.claude/rules/`. Read the relevant file when working in 
 | 4 | Level editor | LDtk + `bevy_ecs_ldtk` | stack |
 | 5 | Resolution / tile size / art | 384×216 / 16×16 / free asset packs | art-and-render |
 | 6 | Jump feel tier | Modern baseline (variable height + coyote + buffer + asymmetric gravity) | platforming-feel |
-| 7 | Horizontal feel | Hybrid: ground-tight, air-momentum, full air control | platforming-feel |
+| 7 | Horizontal feel | Hybrid: ground-tight, air-momentum, full air control. Stick magnitude is a **throttle** — analog tilt sets target speed (Dead Cells / Ender Lilies model), not just a starting strength. | platforming-feel |
 | 8 | Timestep | Fixed 60Hz, render-time interpolation | simulation |
 | 9 | Wall mechanics | Slide + jump from the start, 6-frame input lockout | platforming-feel |
 | 10 | Camera | Room-locked, pixel-perfect, hard snap | world |
