@@ -37,15 +37,29 @@ mod tests {
 
 ## Test naming
 
-**Name tests after the behavior, not the function.** A test name reads as a sentence about what the system does.
+**Format: three segments — `<function_name>_<condition>_<expected_result>`** — single-underscore separators only, so names stay valid snake_case and don't trip Rust's `non_snake_case` lint.
 
-- ✅ `accel_one_tick_from_rest_with_full_right_input`
-- ✅ `decel_does_not_overshoot_zero`
-- ✅ `analog_half_stick_produces_half_accel`
+The three-segment structure is **load-bearing**, even though the segments aren't visually delimited. Always write the test name in this order:
+
+- Segment 1 — the function or item under test, written as the actual symbol name (`next_velocity`, `sanitize_axis`, `lerp_position`).
+- Segment 2 — the input condition or scenario being exercised (`at_rest_full_right_input`, `nan_input`, `at_max_speed_stick_released`).
+- Segment 3 — the observable result (`accelerates_by_one_tick_delta`, `returns_zero`, `clamps_to_max_speed`).
+
+Read the resulting name out loud as: *"\<function\>, when \<condition\>, \<expected_result\>."*
+
+Examples:
+
+- ✅ `next_velocity_at_rest_full_right_input_accelerates_by_one_tick_delta`
+- ✅ `next_velocity_at_max_speed_stick_released_decelerates_by_one_tick_delta`
+- ✅ `next_velocity_small_positive_velocity_stick_released_lands_exactly_at_zero`
+- ✅ `sanitize_axis_nan_input_returns_zero`
+- ✅ `sanitize_axis_above_one_clamps_to_one`
 - ❌ `test_next_velocity_1`
-- ❌ `next_velocity_works`
+- ❌ `next_velocity_works` (skips condition + result)
+- ❌ `accel_one_tick_from_rest_with_full_right_input` (skips function name — behavior-sentence legacy style, replace when you next touch the file)
+- ❌ `next_velocity__at_rest__accelerates` (double-underscore separators trip `non_snake_case`)
 
-If renaming the function under test would force renaming the test, the test name is wrong. The behavior didn't change — the implementation moved.
+The first segment is the *symbol*, not free-form prose: when the function under test is renamed, every test naming it must be renamed too — that's intentional. Function-anchored names make `cargo test next_velocity` filter to the right set, and failure output reads as the function under condition Y didn't return result Z.
 
 ## Test body structure: Given / When / Then
 
@@ -53,7 +67,7 @@ Use **Given / When / Then** comment blocks inside every test. Adopted from BDD; 
 
 ```rust
 #[test]
-fn analog_half_stick_produces_half_accel() {
+fn next_velocity_at_rest_half_stick_accelerates_by_half_tick_delta() {
     // Given a player at rest with default movement config,
     let config = MovementConfig::default();
     let starting_velocity = 0.0;
