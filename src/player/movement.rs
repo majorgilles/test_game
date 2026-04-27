@@ -17,6 +17,13 @@ impl Default for MovementConfig {
     }
 }
 
+pub fn sanitize_axis(raw: f32) -> f32 {
+    if raw.is_nan() {
+        return 0.0;
+    }
+    raw.clamp(-1.0, 1.0)
+}
+
 pub fn next_velocity(current: f32, direction: f32, config: &MovementConfig) -> f32 {
     // Stick magnitude is a throttle: target speed = direction * max_speed.
     // We step `current` toward `target` each tick and never overshoot.
@@ -49,6 +56,44 @@ mod tests {
 
     fn approx_eq(a: f32, b: f32) -> bool {
         (a - b).abs() < 1e-5
+    }
+
+    #[test]
+    fn sanitize_axis_passes_through_value_in_range() {
+        // Given a raw axis value already inside [-1.0, +1.0],
+        let raw = 0.5;
+
+        // When we sanitize it,
+        let result = sanitize_axis(raw);
+
+        // Then it is returned unchanged.
+        assert_eq!(result, 0.5);
+    }
+
+    #[test]
+    fn sanitize_axis_clamps_above_one_to_one() {
+        // Given a raw axis value above the +1.0 limit (e.g. hardware/driver glitch),
+        let raw = 1.5;
+
+        // When we sanitize it,
+        let result = sanitize_axis(raw);
+
+        // Then it is clamped down to +1.0 so downstream code never sees overshoot.
+        assert_eq!(result, 1.0);
+    }
+
+    #[test]
+    fn sanitize_axis_treats_nan_as_zero() {
+        // Given a NaN axis read (gamepad driver / HID-layer malformed input —
+        // the kind of thing that crosses an external boundary we don't control),
+        let raw = f32::NAN;
+
+        // When we sanitize it,
+        let result = sanitize_axis(raw);
+
+        // Then it becomes 0.0 — every comparison in next_velocity returns false
+        // against NaN, which would otherwise produce a silent wrong-direction drift.
+        assert_eq!(result, 0.0);
     }
 
     #[test]

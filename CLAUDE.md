@@ -14,8 +14,32 @@ Detailed rules live in `.claude/rules/`. Read the relevant file when working in 
 - **[world.md](.claude/rules/world.md)** — Room transitions, camera, death and respawn, combat resources.
 - **[debug.md](.claude/rules/debug.md)** — Inspector, collider gizmos, custom overlays, F1/F12 toggles.
 - **[testing.md](.claude/rules/testing.md)** — Inline `#[cfg(test)] mod tests`, Given/When/Then bodies, test pure functions, skip ECS plumbing.
-- **[prototype-stages.md](.claude/rules/prototype-stages.md)** — Numbered build stages for the platforming prototype. **Do not skip stages.**
 - **[open-questions.md](.claude/rules/open-questions.md)** — Decisions deferred until forced by code or scope.
+
+## Code style
+
+Project-specific overrides on top of the harness defaults:
+
+- **Doc comment every `pub` item.** Every `pub fn`, `pub struct`, `pub enum`, `pub trait`, and `pub mod` gets a `///` (or `//!` for modules) doc comment. Standard rustdoc — readable via `cargo doc --open`. This deviates from the harness default of "no comments unless the WHY is non-obvious."
+- **Doc comments explain WHY, not WHAT.** The signature already says what the function does. The doc explains the *reason it exists*, the *invariant it upholds*, what *callers need to know* (units, side effects, panics, edge cases, ordering constraints with other systems). Trivial wrappers can be one line; non-obvious items get a paragraph.
+- **Private items (`fn`, `struct` without `pub`) follow the harness default** — no comment unless the WHY is non-obvious. Doc-commenting privates is noise.
+- **Tests do not need doc comments.** The Given/When/Then body and behavior-named test name from `testing.md` already document them.
+
+Examples:
+
+```rust
+/// Sanitizes a leafwing axis read into the `[-1.0, +1.0]` range that the
+/// movement math assumes. Out-of-range values would silently overshoot
+/// `max_speed` downstream, so we clamp at the boundary.
+pub fn clamp_axis(raw: f32) -> f32 { /* ... */ }
+
+/// Player position in world space, owned by the simulation. The visual
+/// `Transform` is *not* this — it is lerped from `PreviousPosition` and
+/// this value by the interpolation system. Writing `Transform` directly
+/// breaks the lerp.
+#[derive(Component)]
+pub struct Position(pub Vec2);
+```
 
 ## Decisions log
 
@@ -42,5 +66,6 @@ Detailed rules live in `.claude/rules/`. Read the relevant file when working in 
 | 19 | Build profile | `dev` opt-level=1 for project code, opt-level=3 for all deps (standard Bevy pattern; deps cached so slow build pays off once). | stack |
 | 20 | Import style | Explicit imports only — no `use bevy::prelude::*`. Deviates from Bevy tutorial idiom; cost is per-file translation tax. | stack |
 | 21 | Camera scaling (stage 2) | `ScalingMode::FixedVertical { 216 }`. Not pixel-perfect on non-integer window scales; defer render-to-texture upgrade until sub-pixel jitter is visible. | art-and-render |
-| 22 | Build approach | Numbered stages, do not skip. Each stage answers a specific runtime question. | prototype-stages |
+| 22 | Build approach | Numbered stages tracked as GitHub issues — see https://github.com/majorgilles/test_game/issues. Each stage answers a specific runtime question; do not skip ahead. | — |
 | 23 | Test style | Inline `#[cfg(test)] mod tests`. Given/When/Then comment bodies. Test extracted pure functions; do not test ECS plumbing. | testing |
+| 24 | Doc comments | Every `pub` item gets a `///` doc comment explaining WHY/invariants/caller contract — not WHAT. Privates follow the harness default (no comment unless non-obvious). | — |

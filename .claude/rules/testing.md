@@ -96,9 +96,14 @@ In every other case, write the test first.
 
 ## Running tests
 
-- `cargo test` — runs all tests, prints results.
-- `cargo test --lib` — only unit tests in `src/`.
-- `cargo test name_substring` — only tests whose names contain the substring.
+This is a **binary crate** (`src/main.rs`, no `[lib]` target in `Cargo.toml`). That means `cargo test --lib` **does not work** — it errors with `no library targets found in package`. Use the binary-target invocations instead.
+
+- `cargo test` — runs all tests in the binary target, prints results.
+- `cargo test --bin test_game` — same as above, explicit. Useful when there are multiple bin targets (we don't have any yet).
+- `cargo test name_substring` — runs only tests whose names contain the substring (e.g., `cargo test clamp_axis`). Filters across all targets.
+- `cargo test name_substring -- --nocapture` — same, but lets `println!` output reach the terminal. Use when a test is failing mysteriously and you want to dump intermediate values.
+
+**Do not use `cargo test --lib`** in this project. If we ever extract reusable code into a `[lib]` target, this section gets updated alongside that change.
 
 Tests run in parallel by default. Make tests independent — no shared global state, no filesystem assumptions, no test that depends on running before/after another. If a test must serialize, it's a sign of leaky state, not a reason for `--test-threads=1`.
 
