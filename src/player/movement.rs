@@ -217,6 +217,24 @@ mod tests {
     }
 
     #[test]
+    fn next_velocity_at_max_speed_full_left_input_decelerates_by_accel_rate() {
+        // Given a player at full positive max speed (was holding full-right),
+        let config = MovementConfig::default();
+        let starting_velocity = config.max_speed;
+
+        // When the player slams the stick fully in the opposite direction
+        // (full-left, direction = -1.0) for one tick,
+        let result = next_velocity(starting_velocity, -1.0, &config);
+
+        // Then velocity drops by the *accel* per-tick delta — direction reversal
+        // is "asking to go faster the other way", an accel concern. Using the
+        // decel rate would make turn-arounds feel sluggish.
+        let accel_per_tick = config.max_speed / config.ground_accel_frames;
+        let expected = starting_velocity - accel_per_tick;
+        assert!(approx_eq(result, expected));
+    }
+
+    #[test]
     fn next_velocity_at_max_speed_eased_to_half_stick_decelerates_to_half_max_speed() {
         // Given a player at full speed (was holding full-right stick),
         let config = MovementConfig::default();
