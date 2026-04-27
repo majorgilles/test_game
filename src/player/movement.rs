@@ -1,21 +1,21 @@
+use bevy::ecs::component::Component;
 use bevy::ecs::resource::Resource;
+use bevy::ecs::system::{Query, Res};
+use bevy::math::Vec2;
+use bevy::time::{Fixed, Time};
+use leafwing_input_manager::action_state::ActionState;
 
-/// Tunable feel parameters for horizontal movement. Lives as a Bevy `Resource`
-/// so designers can hot-edit values via the inspector (F12) without recompiling.
-///
-/// Defaults come from `.claude/rules/platforming-feel.md` and are starting
-/// points — they will be tuned against actual level geometry.
+use crate::input::PlayerAction;
+
+/// Tunable feel parameters for horizontal movement, kept as a `Resource` for
+/// inspector hot-edits.
 #[derive(Resource)]
 pub struct MovementConfig {
-    /// Top horizontal speed in pixels/second. At 16-px tiles, 112 px/s ≈ 7
-    /// tiles/s — the middle of the 6–8 tiles/s target range from the rules.
+    /// Top horizontal speed in pixels/second.
     pub max_speed: f32,
-    /// Number of fixed (60 Hz) ticks to reach `max_speed` from rest with
-    /// full-stick input. Fixed-tick units, *not* seconds — the schedule
-    /// discipline in `simulation.md` requires frame-counted feel parameters.
+    /// Fixed-tick (60 Hz) units, not seconds — feel is tuned in frames.
     pub ground_accel_frames: f32,
-    /// Number of fixed ticks to come to rest from `max_speed` when the stick
-    /// is released. Same unit caveat as `ground_accel_frames`.
+    /// Fixed-tick units. See `ground_accel_frames`.
     pub ground_decel_frames: f32,
 }
 
@@ -29,19 +29,8 @@ impl Default for MovementConfig {
     }
 }
 
-/// Sanitizes a leafwing axis read into the contract `next_velocity` assumes:
-/// a real number in `[-1.0, +1.0]`.
-///
-/// This is the single boundary between leafwing's input pipeline (which we
-/// don't fully control — gamepad drivers and HID layers cross OS APIs) and
-/// the movement math. Every consumer of `PlayerAction::Move` should funnel
-/// the raw read through here so downstream code can rely on a clean value.
-///
-/// - Out-of-range values would silently let the player exceed `max_speed`
-///   downstream (`target = direction * max_speed`), so we clamp at the boundary.
-/// - `NaN` propagates through every comparison in `next_velocity` as `false`,
-///   producing a silent wrong-direction drift rather than a loud failure —
-///   we map it to `0.0` so the player simply stops on malformed input.
+/// Clamps a raw axis read into `[-1.0, +1.0]` and maps `NaN` to `0.0` so
+/// `next_velocity` never sees out-of-contract input.
 pub fn sanitize_axis(raw: f32) -> f32 {
     if raw.is_nan() {
         return 0.0;
@@ -49,17 +38,9 @@ pub fn sanitize_axis(raw: f32) -> f32 {
     raw.clamp(-1.0, 1.0)
 }
 
-/// Advances horizontal velocity by one fixed tick toward the throttle target
-/// `direction * max_speed` (per the analog-throttle model in `platforming-feel.md`).
-///
-/// Caller contract: `direction` must already be sanitized — clean of NaN and
-/// inside `[-1.0, +1.0]`. Run the raw axis read through `sanitize_axis` first.
-///
-/// Two rates govern the approach to target: the accel rate applies when the
-/// player is being asked to go *faster* in the input direction (including
-/// direction reversal), the decel rate applies when they're being asked to
-/// slow down (released stick or reduced stick magnitude). The function never
-/// overshoots target — small remaining gaps snap to it.
+/// One-tick step of horizontal velocity toward `direction * max_speed`.
+/// Caller must pre-sanitize `direction`; reversal uses accel rate, slowdown
+/// uses decel rate, never overshoots target.
 pub fn next_velocity(current: f32, direction: f32, config: &MovementConfig) -> f32 {
     // Stick magnitude is a throttle: target speed = direction * max_speed.
     // We step `current` toward `target` each tick and never overshoot.
