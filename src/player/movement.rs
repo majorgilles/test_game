@@ -1,4 +1,5 @@
 use bevy::ecs::component::Component;
+use bevy::ecs::query::With;
 use bevy::ecs::resource::Resource;
 use bevy::ecs::system::{Query, Res};
 use bevy::math::Vec2;
@@ -64,6 +65,31 @@ pub fn next_velocity(current: f32, direction: f32, config: &MovementConfig) -> f
         current + step
     } else {
         current - step
+    }
+}
+
+/// Marker for the player entity.
+#[derive(Component)]
+pub struct Player;
+
+/// Simulation-owned world-space position; visual `Transform` is lerped from this.
+#[derive(Component, Default)]
+pub struct Position(pub Vec2);
+
+/// Simulation-owned velocity in pixels/second.
+#[derive(Component, Default)]
+pub struct Velocity(pub Vec2);
+
+/// FixedUpdate system: reads `Move`, steps velocity, integrates position.
+pub fn apply_horizontal_movement(
+    time: Res<Time<Fixed>>,
+    config: Res<MovementConfig>,
+    mut query: Query<(&ActionState<PlayerAction>, &mut Velocity, &mut Position), With<Player>>,
+) {
+    for (actions, mut velocity, mut position) in &mut query {
+        let direction = sanitize_axis(actions.clamped_value(&PlayerAction::Move));
+        velocity.0.x = next_velocity(velocity.0.x, direction, &config);
+        position.0.x += velocity.0.x * time.delta_secs();
     }
 }
 

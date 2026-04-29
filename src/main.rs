@@ -1,3 +1,4 @@
+mod input;
 mod physics;
 mod player;
 
@@ -9,8 +10,14 @@ use bevy::ecs::system::Commands;
 use bevy::image::ImagePlugin;
 use bevy::math::Vec2;
 use bevy::sprite::Sprite;
+use bevy::time::{Fixed, Time};
 use bevy::transform::components::Transform;
 use bevy::utils::default;
+use leafwing_input_manager::action_state::ActionState;
+
+use crate::input::{PlayerAction, default_input_map};
+use crate::player::PlayerPlugin;
+use crate::player::movement::{Player, Position, Velocity};
 
 const INTERNAL_HEIGHT: f32 = 216.0;
 const PLAYER_SIZE: f32 = 16.0;
@@ -18,6 +25,8 @@ const PLAYER_SIZE: f32 = 16.0;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
+        .add_plugins(PlayerPlugin)
+        .insert_resource(Time::<Fixed>::from_hz(60.0))
         .add_systems(Startup, setup)
         .run();
 }
@@ -34,6 +43,11 @@ fn setup(mut commands: Commands) {
     ));
 
     commands.spawn((
+        Player,
+        Position(Vec2::ZERO),
+        Velocity(Vec2::ZERO),
+        ActionState::<PlayerAction>::default(),
+        default_input_map(),
         Sprite {
             color: Color::WHITE,
             custom_size: Some(Vec2::splat(PLAYER_SIZE)),
