@@ -17,6 +17,7 @@ use leafwing_input_manager::action_state::ActionState;
 
 use crate::input::{PlayerAction, default_input_map};
 use crate::physics::PhysicsPlugin;
+use crate::physics::ground::Grounded;
 use crate::physics::kinematics::{Position, Velocity};
 use crate::player::Player;
 use crate::player::PlayerPlugin;
@@ -53,6 +54,7 @@ fn setup(mut commands: Commands) {
         ActionState::<PlayerAction>::default(),
         default_input_map(),
         Collider::rectangle(PLAYER_SIZE, PLAYER_SIZE),
+        Grounded::default(),
         Sprite {
             color: Color::WHITE,
             custom_size: Some(Vec2::splat(PLAYER_SIZE)),

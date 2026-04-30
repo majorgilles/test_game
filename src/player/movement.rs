@@ -69,7 +69,7 @@ pub fn next_velocity(current: f32, direction: f32, config: &MovementConfig) -> f
 }
 
 /// FixedUpdate system: reads `Move`, steps velocity, integrates position.
-pub fn apply_horizontal_movement(
+pub fn apply_movement(
     time: Res<Time<Fixed>>,
     config: Res<MovementConfig>,
     mut query: Query<(&ActionState<PlayerAction>, &mut Velocity, &mut Position), With<Player>>,
@@ -78,6 +78,7 @@ pub fn apply_horizontal_movement(
         let direction = sanitize_axis(actions.clamped_value(&PlayerAction::Move));
         velocity.0.x = next_velocity(velocity.0.x, direction, &config);
         position.0.x += velocity.0.x * time.delta_secs();
+        position.0.y += velocity.0.y * time.delta_secs();
     }
 }
 

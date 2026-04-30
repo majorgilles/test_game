@@ -15,7 +15,7 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(InputManagerPlugin::<PlayerAction>::default())
             .init_resource::<movement::MovementConfig>()
-            .add_systems(FixedUpdate, movement::apply_horizontal_movement)
+            .add_systems(FixedUpdate, movement::apply_movement)
             .add_systems(Update, render::sync_player_transform);
     }
 }
