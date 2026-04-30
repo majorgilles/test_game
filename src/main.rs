@@ -16,6 +16,7 @@ use bevy::utils::default;
 use leafwing_input_manager::action_state::ActionState;
 
 use crate::input::{PlayerAction, default_input_map};
+use crate::physics::PhysicsPlugin;
 use crate::player::PlayerPlugin;
 use crate::player::movement::{Player, Position, Velocity};
 use avian2d::prelude::{Collider, Gravity, PhysicsPlugins, RigidBody};
@@ -29,6 +30,7 @@ fn main() {
         .add_plugins(PhysicsPlugins::default().with_length_unit(1.0))
         .insert_resource(Gravity(Vec2::ZERO))
         .add_plugins(PlayerPlugin)
+        .add_plugins(PhysicsPlugin)
         .insert_resource(Time::<Fixed>::from_hz(60.0))
         .add_systems(Startup, setup)
         .run();

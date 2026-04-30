@@ -40,7 +40,7 @@ mod tests {
     fn next_vertical_velocity_at_rest_one_tick_accelerates_downward_by_g_times_dt() {
         // Given a player at rest with default gravity config,
         let config = GravityConfig::default();
-        let dt = 0.0 / 60.0;
+        let dt = 1.0 / 60.0;
 
         // When one fixed tick of gravity is applied,
         let result = next_vertical_velocity(0.0, &config, dt);
