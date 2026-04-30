@@ -18,7 +18,7 @@ use leafwing_input_manager::action_state::ActionState;
 use crate::input::{PlayerAction, default_input_map};
 use crate::player::PlayerPlugin;
 use crate::player::movement::{Player, Position, Velocity};
-use avian2d::prelude::{Gravity, PhysicsPlugins};
+use avian2d::prelude::{Collider, Gravity, PhysicsPlugins, RigidBody};
 
 const INTERNAL_HEIGHT: f32 = 216.0;
 const PLAYER_SIZE: f32 = 16.0;
@@ -51,11 +51,23 @@ fn setup(mut commands: Commands) {
         Velocity(Vec2::ZERO),
         ActionState::<PlayerAction>::default(),
         default_input_map(),
+        Collider::rectangle(PLAYER_SIZE, PLAYER_SIZE),
         Sprite {
             color: Color::WHITE,
             custom_size: Some(Vec2::splat(PLAYER_SIZE)),
             ..default()
         },
         Transform::from_xyz(0.0, 0.0, 0.0),
+    ));
+
+    commands.spawn((
+        RigidBody::Static,
+        Collider::rectangle(384.0, 16.0),
+        Sprite {
+            color: Color::srgb(0.3, 0.3, 0.3),
+            custom_size: Some(Vec2::new(384.0, 16.0)),
+            ..default()
+        },
+        Transform::from_xyz(0.0, -80.0, 0.0),
     ));
 }
