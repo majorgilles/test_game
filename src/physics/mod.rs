@@ -1,5 +1,5 @@
 use avian2d::prelude::{Gravity, PhysicsPlugins};
-use bevy::app::{App, Plugin};
+use bevy::app::{App, FixedUpdate, Plugin};
 use bevy::math::Vec2;
 
 pub mod gravity;
@@ -14,6 +14,7 @@ impl Plugin for PhysicsPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(PhysicsPlugins::default().with_length_unit(1.0))
             .insert_resource(Gravity(Vec2::ZERO))
-            .init_resource::<gravity::GravityConfig>();
+            .init_resource::<gravity::GravityConfig>()
+            .add_systems(FixedUpdate, gravity::apply_gravity);
     }
 }
