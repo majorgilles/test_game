@@ -8,7 +8,7 @@ use bevy::camera::{Camera2d, OrthographicProjection, Projection, ScalingMode};
 use bevy::color::Color;
 use bevy::ecs::system::Commands;
 use bevy::image::ImagePlugin;
-use bevy::math::Vec2;
+use bevy::math::{Vec2, VectorSpace};
 use bevy::sprite::Sprite;
 use bevy::time::{Fixed, Time};
 use bevy::transform::components::Transform;
@@ -18,6 +18,7 @@ use leafwing_input_manager::action_state::ActionState;
 use crate::input::{PlayerAction, default_input_map};
 use crate::player::PlayerPlugin;
 use crate::player::movement::{Player, Position, Velocity};
+use avian2d::prelude::{Gravity, PhysicsPlugins};
 
 const INTERNAL_HEIGHT: f32 = 216.0;
 const PLAYER_SIZE: f32 = 16.0;
@@ -25,6 +26,8 @@ const PLAYER_SIZE: f32 = 16.0;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
+        .add_plugins(PhysicsPlugins::default().with_length_unit(1.0))
+        .insert_resource(Gravity(Vec2::ZERO))
         .add_plugins(PlayerPlugin)
         .insert_resource(Time::<Fixed>::from_hz(60.0))
         .add_systems(Startup, setup)
