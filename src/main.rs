@@ -8,7 +8,7 @@ use bevy::camera::{Camera2d, OrthographicProjection, Projection, ScalingMode};
 use bevy::color::Color;
 use bevy::ecs::system::Commands;
 use bevy::image::ImagePlugin;
-use bevy::math::{Vec2, VectorSpace};
+use bevy::math::Vec2;
 use bevy::sprite::Sprite;
 use bevy::time::{Fixed, Time};
 use bevy::transform::components::Transform;
