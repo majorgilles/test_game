@@ -1,5 +1,24 @@
+use bevy::ecs::query::With;
+use bevy::ecs::resource::Resource;
+use bevy::ecs::system::{Query, Res};
+use bevy::time::{Fixed, Time};
+
+use crate::physics::kinematics::Velocity;
+use crate::player::Player;
+
+/// FixedUpdate system: integrates gravity into the player's vertical velocity.
+pub fn apply_gravity(
+    time: Res<Time<Fixed>>,
+    config: Res<GravityConfig>,
+    mut query: Query<&mut Velocity, With<Player>>,
+) {
+    for mut velocity in &mut query {
+        velocity.0.y = next_vertical_velocity(velocity.0.y, &config, time.delta_secs());
+    }
+}
+
 /// Tunable gravity parameters. Will grow asymmetric (up vs. down) in a later stage.
-#[derive(bevy::ecs::resource::Resource)]
+#[derive(Resource)]
 pub struct GravityConfig {
     /// Downward acceleration in px/s^2. Negative because +y is up.
     pub acceleration: f32,

@@ -1,12 +1,12 @@
-use bevy::ecs::component::Component;
 use bevy::ecs::query::With;
 use bevy::ecs::resource::Resource;
 use bevy::ecs::system::{Query, Res};
-use bevy::math::Vec2;
 use bevy::time::{Fixed, Time};
 use leafwing_input_manager::action_state::ActionState;
 
 use crate::input::PlayerAction;
+use crate::physics::kinematics::{Position, Velocity};
+use crate::player::Player;
 
 /// Tunable feel parameters for horizontal movement, kept as a `Resource` for
 /// inspector hot-edits.
@@ -67,18 +67,6 @@ pub fn next_velocity(current: f32, direction: f32, config: &MovementConfig) -> f
         current - step
     }
 }
-
-/// Marker for the player entity.
-#[derive(Component)]
-pub struct Player;
-
-/// Simulation-owned world-space position; visual `Transform` is lerped from this.
-#[derive(Component, Default)]
-pub struct Position(pub Vec2);
-
-/// Simulation-owned velocity in pixels/second.
-#[derive(Component, Default)]
-pub struct Velocity(pub Vec2);
 
 /// FixedUpdate system: reads `Move`, steps velocity, integrates position.
 pub fn apply_horizontal_movement(

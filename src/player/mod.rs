@@ -1,4 +1,5 @@
 use bevy::app::{App, FixedUpdate, Plugin, Update};
+use bevy::ecs::component::Component;
 use leafwing_input_manager::plugin::InputManagerPlugin;
 
 use crate::input::PlayerAction;
@@ -18,3 +19,8 @@ impl Plugin for PlayerPlugin {
             .add_systems(Update, render::sync_player_transform);
     }
 }
+
+/// Marker for the player entity. Used by movement, gravity and rendering
+/// systems to filter their queries.
+#[derive(Component)]
+pub struct Player;

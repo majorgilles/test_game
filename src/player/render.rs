@@ -2,7 +2,8 @@ use bevy::ecs::query::With;
 use bevy::ecs::system::Query;
 use bevy::transform::components::Transform;
 
-use crate::player::movement::{Player, Position};
+use crate::physics::kinematics::Position;
+use crate::player::Player;
 
 /// Stop-gap visual sync: copies simulation `Position` straight to `Transform`.
 /// Replaced by render-time interpolation when `physics::interpolation` ships.
