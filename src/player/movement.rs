@@ -94,7 +94,7 @@ pub fn apply_movement(
         velocity.0.x = next_velocity(velocity.0.x, direction, &config);
 
         let dt = time.delta_secs();
-        position.0.x = velocity.0.x * dt;
+        position.0.x += velocity.0.x * dt;
 
         let dy = velocity.0.y * dt;
         if dy != 0.0 {
