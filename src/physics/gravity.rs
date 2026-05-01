@@ -3,6 +3,7 @@ use bevy::ecs::resource::Resource;
 use bevy::ecs::system::{Query, Res};
 use bevy::time::{Fixed, Time};
 
+use crate::physics::ground::Grounded;
 use crate::physics::kinematics::Velocity;
 use crate::player::Player;
 
@@ -10,9 +11,12 @@ use crate::player::Player;
 pub fn apply_gravity(
     time: Res<Time<Fixed>>,
     config: Res<GravityConfig>,
-    mut query: Query<&mut Velocity, With<Player>>,
+    mut query: Query<(&mut Velocity, &Grounded), With<Player>>,
 ) {
-    for mut velocity in &mut query {
+    for (mut velocity, grounded) in &mut query {
+        if grounded.0 {
+            continue;
+        }
         velocity.0.y = next_vertical_velocity(velocity.0.y, &config, time.delta_secs());
     }
 }
