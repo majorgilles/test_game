@@ -4,6 +4,7 @@ use leafwing_input_manager::plugin::InputManagerPlugin;
 
 use crate::input::PlayerAction;
 
+pub mod jump;
 pub mod movement;
 pub mod render;
 
