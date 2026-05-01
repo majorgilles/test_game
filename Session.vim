@@ -10,15 +10,14 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 let s:shortmess_save = &shortmess
 set shortmess+=aoO
-badd +17 C:/dev/test_game/Cargo.toml
-badd +63 C:/dev/test_game/src/physics/gravity.rs
-badd +2 C:/dev/test_game/src/physics/mod.rs
-badd +2 C:/dev/test_game/continuous_runner.ps1
-badd +15 C:/dev/test_game/src/player/mod.rs
+badd +10 C:/dev/test_game/src/physics/gravity.rs
+badd +39 C:/dev/test_game/src/physics/ground.rs
+badd +25 C:/dev/test_game/src/physics/mod.rs
+badd +79 C:/dev/test_game/src/player/movement.rs
 argglobal
 %argdel
 $argadd .
-edit C:/dev/test_game/src/player/mod.rs
+edit C:/dev/test_game/src/player/movement.rs
 let s:save_splitbelow = &splitbelow
 let s:save_splitright = &splitright
 set splitbelow splitright
@@ -32,7 +31,7 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 argglobal
-balt C:/dev/test_game/src/physics/gravity.rs
+balt C:/dev/test_game/src/physics/ground.rs
 setlocal foldmethod=expr
 setlocal foldexpr=v:lua.vim.lsp.foldexpr()
 setlocal foldmarker={{{,}}}
@@ -41,12 +40,18 @@ setlocal foldlevel=99
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldenable
-let s:l = 15 - ((14 * winheight(0) + 12) / 25)
+75
+sil! normal! zo
+77
+sil! normal! zo
+77
+sil! normal! zo
+let s:l = 79 - ((21 * winheight(0) + 26) / 52)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 15
-normal! 070|
+keepjumps 79
+normal! 032|
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

@@ -22,7 +22,6 @@ impl Plugin for PhysicsPlugin {
                 (
                     ground::update_grounded,
                     gravity::apply_gravity.after(ground::update_grounded),
-                    ground::resolve_ground_collision.after(gravity::apply_gravity),
                 ),
             );
     }

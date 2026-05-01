@@ -1,3 +1,7 @@
+use avian2d::prelude::{Collider, ShapeCastConfig, SpatialQuery, SpatialQueryFilter};
+use bevy::ecs::entity::Entity;
+use bevy::math::Dir2;
+
 use bevy::ecs::query::With;
 use bevy::ecs::resource::Resource;
 use bevy::ecs::system::{Query, Res};
@@ -68,17 +72,53 @@ pub fn next_velocity(current: f32, direction: f32, config: &MovementConfig) -> f
     }
 }
 
-/// FixedUpdate system: reads `Move`, steps velocity, integrates position.
+/// FixedUpdate system: reads `Move`, steps velocity, sweeps the Y move so the
+/// player never embeds in solid colliders. X is naive (no walls yet).
 pub fn apply_movement(
     time: Res<Time<Fixed>>,
     config: Res<MovementConfig>,
-    mut query: Query<(&ActionState<PlayerAction>, &mut Velocity, &mut Position), With<Player>>,
+    spatial: SpatialQuery,
+    mut query: Query<
+        (
+            Entity,
+            &ActionState<PlayerAction>,
+            &mut Velocity,
+            &mut Position,
+            &Collider,
+        ),
+        With<Player>,
+    >,
 ) {
-    for (actions, mut velocity, mut position) in &mut query {
+    for (entity, actions, mut velocity, mut position, collider) in &mut query {
         let direction = sanitize_axis(actions.clamped_value(&PlayerAction::Move));
         velocity.0.x = next_velocity(velocity.0.x, direction, &config);
-        position.0.x += velocity.0.x * time.delta_secs();
-        position.0.y += velocity.0.y * time.delta_secs();
+
+        let dt = time.delta_secs();
+        position.0.x = velocity.0.x * dt;
+
+        let dy = velocity.0.y * dt;
+        if dy != 0.0 {
+            let direction = if dy < 0.0 { Dir2::NEG_Y } else { Dir2::Y };
+            let max_distance = dy.abs();
+            let hit = spatial.cast_shape(
+                collider,
+                position.0,
+                0.0,
+                direction,
+                &ShapeCastConfig::from_max_distance(max_distance),
+                &SpatialQueryFilter::default().with_excluded_entities([entity]),
+            );
+
+            match hit {
+                Some(hit) => {
+                    position.0.y += direction.y * hit.distance;
+                    velocity.0.y = 0.0;
+                }
+                None => {
+                    position.0.y += dy;
+                }
+            }
+        }
     }
 }
 
