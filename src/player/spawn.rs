@@ -11,7 +11,7 @@ use bevy::sprite::Sprite;
 use bevy::utils::default;
 use leafwing_input_manager::prelude::ActionState;
 
-const PLAYER_SIZE: f32 = 16.0;
+const PLAYER_SIZE: f32 = 18.0;
 
 /// Spwans the player at the position of the `PlayerSpawn` LDtk entity marker.
 ///

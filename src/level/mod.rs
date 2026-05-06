@@ -33,7 +33,7 @@ struct WallBundle {
 impl From<IntGridCell> for WallBundle {
     fn from(_: IntGridCell) -> Self {
         WallBundle {
-            collider: Collider::rectangle(16.0, 16.0),
+            collider: Collider::rectangle(18.0, 18.0),
             rigid_body: RigidBody::Static,
         }
     }
