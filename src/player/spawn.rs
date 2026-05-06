@@ -10,7 +10,6 @@ use bevy::prelude::{Added, Commands, Entity, Query, Transform};
 use bevy::sprite::Sprite;
 use bevy::utils::default;
 use leafwing_input_manager::prelude::ActionState;
-use std::process::Command;
 
 const PLAYER_SIZE: f32 = 16.0;
 
