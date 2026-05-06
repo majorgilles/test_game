@@ -1,4 +1,5 @@
 mod input;
+mod level;
 mod physics;
 mod player;
 
@@ -16,12 +17,13 @@ use bevy::utils::default;
 use leafwing_input_manager::action_state::ActionState;
 
 use crate::input::{PlayerAction, default_input_map};
+use crate::level::LevelPlugin;
 use crate::physics::PhysicsPlugin;
 use crate::physics::ground::Grounded;
 use crate::physics::kinematics::{Position, Velocity};
 use crate::player::Player;
 use crate::player::PlayerPlugin;
-use avian2d::prelude::{Collider, RigidBody};
+use avian2d::prelude::Collider;
 
 const INTERNAL_HEIGHT: f32 = 216.0;
 const PLAYER_SIZE: f32 = 16.0;
@@ -31,6 +33,7 @@ fn main() {
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_plugins(PlayerPlugin)
         .add_plugins(PhysicsPlugin)
+        .add_plugins(LevelPlugin)
         .insert_resource(Time::<Fixed>::from_hz(60.0))
         .add_systems(Startup, setup)
         .run();
@@ -61,16 +64,5 @@ fn setup(mut commands: Commands) {
             ..default()
         },
         Transform::from_xyz(0.0, 0.0, 0.0),
-    ));
-
-    commands.spawn((
-        RigidBody::Static,
-        Collider::rectangle(384.0, 16.0),
-        Sprite {
-            color: Color::srgb(0.3, 0.3, 0.3),
-            custom_size: Some(Vec2::new(384.0, 16.0)),
-            ..default()
-        },
-        Transform::from_xyz(0.0, -80.0, 0.0),
     ));
 }
