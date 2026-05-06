@@ -7,6 +7,7 @@ use crate::input::PlayerAction;
 pub mod jump;
 pub mod movement;
 pub mod render;
+mod spawn;
 
 /// Registers leafwing for `PlayerAction`, the `MovementConfig` resource, the
 /// FixedUpdate movement system, and the Update transform-sync.
@@ -18,7 +19,10 @@ impl Plugin for PlayerPlugin {
             .init_resource::<movement::MovementConfig>()
             .init_resource::<jump::JumpConfig>()
             .add_systems(FixedUpdate, (movement::apply_movement, jump::apply_jump))
-            .add_systems(Update, render::sync_player_transform);
+            .add_systems(
+                Update,
+                (render::sync_player_transform, spawn::spawn_player_at_marker),
+            );
     }
 }
 

@@ -6,27 +6,17 @@ mod player;
 use bevy::DefaultPlugins;
 use bevy::app::{App, PluginGroup, Startup};
 use bevy::camera::{Camera2d, OrthographicProjection, Projection, ScalingMode};
-use bevy::color::Color;
 use bevy::ecs::system::Commands;
 use bevy::image::ImagePlugin;
 use bevy::math::Vec2;
-use bevy::sprite::Sprite;
 use bevy::time::{Fixed, Time};
 use bevy::transform::components::Transform;
-use bevy::utils::default;
-use leafwing_input_manager::action_state::ActionState;
 
-use crate::input::{PlayerAction, default_input_map};
 use crate::level::LevelPlugin;
 use crate::physics::PhysicsPlugin;
-use crate::physics::ground::Grounded;
-use crate::physics::kinematics::{Position, Velocity};
-use crate::player::Player;
 use crate::player::PlayerPlugin;
-use avian2d::prelude::Collider;
 
 const INTERNAL_HEIGHT: f32 = 216.0;
-const PLAYER_SIZE: f32 = 16.0;
 
 fn main() {
     App::new()
@@ -48,21 +38,6 @@ fn setup(mut commands: Commands) {
             },
             ..OrthographicProjection::default_2d()
         }),
-    ));
-
-    commands.spawn((
-        Player,
-        Position(Vec2::ZERO),
-        Velocity(Vec2::ZERO),
-        ActionState::<PlayerAction>::default(),
-        default_input_map(),
-        Collider::rectangle(PLAYER_SIZE, PLAYER_SIZE),
-        Grounded::default(),
-        Sprite {
-            color: Color::WHITE,
-            custom_size: Some(Vec2::splat(PLAYER_SIZE)),
-            ..default()
-        },
-        Transform::from_xyz(0.0, 0.0, 0.0),
+        Transform::from_translation(Vec2::new(180.0, -100.0).extend(1000.0)),
     ));
 }
