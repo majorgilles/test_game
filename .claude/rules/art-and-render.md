@@ -3,13 +3,13 @@
 ## Resolution
 
 - **Internal canvas:** 384×216 (16:9). Renders to a fixed-size canvas and is upscaled (integer scale) to the window — ×5 to 1080p, ×10 to 4K. No blurry scaling, no letterbox math.
-- **Tile size:** 16×16.
+- **Tile size:** 18×18. Dictated by Kenney Pixel Platformer (decision 5) — tiles in `tilemap_packed.png` are 18×18 with 0-px spacing. Viewport at 384×216 fits ~21×12 tiles.
 
 ## Art source
 
-Free asset packs (Kenney, OpenGameArt, itch.io free packs) while focus is on code. We are not drawing original art at this stage.
+Kenney Pixel Platformer pack (https://kenney.nl/assets/pixel-platformer) for terrain, backgrounds, and characters while focus is on code. We are not drawing original art at this stage. Other free packs (OpenGameArt, itch.io) may be added later, but the project is anchored to Kenney's 18×18 grid.
 
-A specific tileset and character pack must be picked **before** locomotion tuning — the chosen sprite's run-loop frame count and stride length dictate locomotion speed.
+The Kenney character sheet's run-loop frame count and stride length dictate locomotion-tuning numbers — measure once a character is on screen, don't decide in advance.
 
 ## Animation
 

@@ -19,7 +19,7 @@ Starting parameters (will be tuned against actual level geometry once a test roo
 - Ground decel: stop from max speed in ~5 frames (~0.08s)
 - Air accel: reach max speed in ~10 frames (~0.17s) — roughly half ground accel
 - Air decel: ~12 frames
-- Max speed: ~6–8 tiles/second → ~96–128 px/s at 16-px tiles
+- Max speed: ~6–8 tiles/second → ~108–144 px/s at 18-px tiles
 - **Full air control** (player can press the opposite direction mid-jump), but the reduced air accel means direction reversal is not instant — jumps feel committed without being locked.
 
 ### Stick magnitude is a target-speed throttle (not a binary)

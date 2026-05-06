@@ -10,7 +10,7 @@ Detailed rules live in `.claude/rules/`. Read the relevant file when working in 
 - **[simulation.md](.claude/rules/simulation.md)** — Fixed 60Hz timestep, render-time interpolation, schedule discipline.
 - **[platforming-feel.md](.claude/rules/platforming-feel.md)** — Jump mechanics (variable height, coyote, buffer, asymmetric gravity), horizontal movement, wall slide + jump.
 - **[input.md](.claude/rules/input.md)** — `leafwing-input-manager`, action set, default bindings.
-- **[art-and-render.md](.claude/rules/art-and-render.md)** — 384×216 / 16×16, free asset packs, animation state machine, pixel-perfect rendering.
+- **[art-and-render.md](.claude/rules/art-and-render.md)** — 384×216 / 18×18, free asset packs, animation state machine, pixel-perfect rendering.
 - **[world.md](.claude/rules/world.md)** — Room transitions, camera, death and respawn, combat resources.
 - **[debug.md](.claude/rules/debug.md)** — Inspector, collider gizmos, custom overlays, F1/F12 toggles.
 - **[testing.md](.claude/rules/testing.md)** — Inline `#[cfg(test)] mod tests`, Given/When/Then bodies, test pure functions, skip ECS plumbing.
@@ -49,12 +49,12 @@ pub struct Position(pub Vec2);
 | 2 | Bevy version policy | Latest stable, accept churn | stack |
 | 3 | Physics approach | `avian2d` kinematic — collision queries only, hand-written movement | stack |
 | 4 | Level editor | LDtk + `bevy_ecs_ldtk` | stack |
-| 5 | Resolution / tile size / art | 384×216 / 16×16 / free asset packs | art-and-render |
+| 5 | Resolution / tile size / art | 384×216 / 18×18 / Kenney Pixel Platformer | art-and-render |
 | 6 | Jump feel tier | Modern baseline (variable height + coyote + buffer + asymmetric gravity) | platforming-feel |
 | 7 | Horizontal feel | Hybrid: ground-tight, air-momentum, full air control. Stick magnitude is a **throttle** — analog tilt sets target speed (Dead Cells / Ender Lilies model), not just a starting strength. | platforming-feel |
 | 8 | Timestep | Fixed 60Hz, render-time interpolation | simulation |
 | 9 | Wall mechanics | Slide + jump from the start, 6-frame input lockout | platforming-feel |
-| 10 | Camera | Room-locked, pixel-perfect, hard snap | world |
+| 10 | Camera | Follow player, clamp to room bounds (no out-of-room cells visible), pixel-perfect, hard snap on transition | world |
 | 11 | Project structure | Single crate, plugin-per-feature, defer workspace | stack |
 | 12 | Input | `leafwing-input-manager`, keyboard + gamepad from day one | input |
 | 13 | Death / respawn | Respawn at last bench. Lose XP + currency; keep items, resources, abilities. HP + FP refill. No shade. Health bar + FP bar combat resources. | world |

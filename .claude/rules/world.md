@@ -20,12 +20,13 @@ Doors, locked passages, and fast-travel are **deferred** until upgrade/progressi
 
 ## Camera
 
-Start simple, add complexity only when a room demands it.
+Follow the player; never reveal out-of-room space.
 
-- **Room-locked.** Camera position = current room's center, in world space. One room fills the viewport.
-- **Pixel-perfect.** Camera translation is rounded to whole pixels each frame after positioning.
-- **Hard snap on transition.** No smooth blend between rooms (yet). Add a blend later only if the snap feels jarring.
-- **No deadzone scrolling yet.** When we hit a room genuinely too large for one viewport, add deadzone-based smooth-follow as a *second* camera mode. Until then, room-locked is enough.
+- **Follow.** Camera target = player position each `Update` tick. Centered on the player when the room is large enough; otherwise clamped (see below).
+- **Clamp to room bounds.** Camera position is clamped per-axis so the viewport stays inside the current room's rect. Near a wall the player drifts off-center toward that wall — the alternative (revealing out-of-room cells, or letterboxing) is worse. If a room is *smaller* than the viewport on an axis, that axis falls back to room-center.
+- **Pixel-perfect.** Camera translation is rounded to whole pixels each frame, applied *after* clamping. Sub-pixel sampling makes sprites jitter against the tilemap.
+- **Hard snap on room transition.** No smooth blend between rooms. Add a blend later only if the snap feels jarring.
+- **No deadzone, no smoothing/lerp yet.** Camera tracks the player 1:1 each frame. Adding a deadzone (player moves freely inside a small box before camera engages) and follow smoothing are real feel knobs, but they're cheap to add later and only worth tuning against real gameplay.
 
 ## Death and respawn
 
