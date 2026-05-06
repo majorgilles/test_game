@@ -43,7 +43,7 @@ impl Default for GravityConfig {
 /// One-tick gravity step. Pure: caller passes `dt` so this is unit-testable
 /// without a Bevy `Time` resource. Clamps at terminal velocity.
 pub fn next_vertical_velocity(current: f32, config: &GravityConfig, dt: f32) -> f32 {
-    let next = current + config.acceleration * dt; // Euler integration
+    let next = current + config.acceleration * dt;
     if next < config.terminal_velocity {
         config.terminal_velocity
     } else {

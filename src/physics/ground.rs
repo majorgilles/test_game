@@ -30,7 +30,7 @@ pub fn update_grounded(
             position.0,
             0.0,
             Dir2::NEG_Y,
-            &ShapeCastConfig::from_max_distance(1.0),
+            &ShapeCastConfig::from_max_distance(1.0), // 1 pixel download sweep
             &SpatialQueryFilter::default().with_excluded_entities([entity]),
         );
         grounded.0 = hit.is_some();
