@@ -1,4 +1,10 @@
+use crate::input::PlayerAction;
+use crate::physics::ground::Grounded;
+use crate::physics::kinematics::Velocity;
+use crate::player::Player;
 use bevy::ecs::resource::Resource;
+use bevy::prelude::{Query, Res, With};
+use leafwing_input_manager::action_state::ActionState;
 
 /// Tunable jump parameters. A resource (not a magic literal) so 5b–5e have
 /// something to play against when variable height, coyote, buffer, and
@@ -16,6 +22,15 @@ impl Default for JumpConfig {
     }
 }
 
+pub fn apply_jump(
+    config: Res<JumpConfig>,
+    mut query: Query<(&ActionState<PlayerAction>, &mut Velocity, &Grounded), With<Player>>,
+) {
+    for (actions, mut velocity, grounded) in &mut query {
+        let jump_pressed = actions.just_pressed(&PlayerAction::Jump);
+        velocity.0.y = apply_jump_impulse(velocity.0.y, jump_pressed, grounded.0, &config);
+    }
+}
 pub fn apply_jump_impulse(
     current_vy: f32,
     jump_pressed: bool,

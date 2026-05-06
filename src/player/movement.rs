@@ -110,11 +110,19 @@ pub fn apply_movement(
             );
 
             match hit {
-                Some(hit) => {
+                // Match guard skips zero-distance "phantom hits" — when the
+                // player is resting in contact with a collider (e.g. standing
+                // on the floor), shape-casting in any direction reports
+                // distance=0. Without this guard, a jump's upward sweep would
+                // immediately hit the floor we're standing on, clamp the move
+                // to zero, and zero `vy` — killing the jump in the same tick
+                // it was applied. Real collisions always have distance > 0.
+                // If the distance is 0, we already collided.
+                Some(hit) if hit.distance > 0.0 => {
                     position.0.y += direction.y * hit.distance;
                     velocity.0.y = 0.0;
                 }
-                None => {
+                _ => {
                     position.0.y += dy;
                 }
             }
