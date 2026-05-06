@@ -3,7 +3,10 @@
     "allow": [
       "WebFetch(domain:crates.io)",
       "WebFetch(domain:docs.rs)",
-      "Bash(gh issue *)"
+      "Bash(gh issue *)",
+      "Bash(where nvim *)",
+      "Bash(nvim --version)",
+      "Bash(Select-Object -First 3)"
     ]
   }
 }
